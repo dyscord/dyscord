@@ -83,7 +83,7 @@ class PluginManager:
 
             try:
                 # Copy tmp plugin package to plugin directory:
-                shutil.copytree(os.path.join(plugin_dir, package_name), os.path.join(PLUGIN_DIR, package_name))
+                shutil.copytree(os.path.join(plugin_dir, package_name), os.path.join(PLUGIN_DIR, name))
             except FileExistsError:
                 raise PluginExists
         finally:
