@@ -78,8 +78,11 @@ class PluginManager:
 
                 # Get package name:
                 package_name = plugin_info["package"]
+                version = plugin_info["version"]
             except FileNotFoundError:  # Catch if info file is missing
                 raise PluginMalformedError
+            else:
+                print("Downloading {} ({})".format(name, version))
 
             try:
                 # Copy tmp plugin package to plugin directory:
