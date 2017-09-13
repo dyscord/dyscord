@@ -107,3 +107,8 @@ ENV/
 *.iml
 out
 gen
+
+# Ignore all files in plugin bin, except __init__.py
+dyscord/plugin_bin/*
+!dyscord/plugin_bin/__init__.py
+!dyscord/plugin_bin/tmp
