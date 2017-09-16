@@ -51,16 +51,6 @@ def collect_plugin_list():
     return pkgs
 
 
-PLUGIN_DB = collect_plugin_list()
-
-
-def collect_plugin_info(name):
-    try:
-        return PLUGIN_DB[name]
-    except KeyError:
-        raise PluginNotFound
-
-
 def module_search(p: str) -> List[pkgutil.ModuleInfo]:
     return list(pkgutil.iter_modules([p]))
 
@@ -68,6 +58,7 @@ def module_search(p: str) -> List[pkgutil.ModuleInfo]:
 class PluginManager:
     def __init__(self):
         self.loaded = {}
+        self.plugin_list = collect_plugin_list()
 
     @property
     def downloaded(self):  # Get list of downloaded plugin names
@@ -84,8 +75,14 @@ class PluginManager:
         self.loaded[name] = Plugin
         return Plugin
 
-    @staticmethod
-    def download_plugin(name):
+    def get_plugin_info(self, name):
+        try:
+            return self.plugin_list[name]
+        except KeyError:
+            raise PluginNotFound
+
+    @classmethod
+    def download_plugin(cls, name):
         # Create temporary directory for the setup of the plugin:
         td = tempfile.TemporaryDirectory()
         try:
@@ -93,7 +90,7 @@ class PluginManager:
             plugin_tar_loc = os.path.join(temp_dir, "plugin.tar.gz")  # Set download location
 
             # Request plugin info:
-            plugin_info = collect_plugin_info(name)
+            plugin_info = cls.get_plugin_info(name)
 
             # Download plugin to temporary location:
             request.urlretrieve(plugin_info["download_link"], plugin_tar_loc)
