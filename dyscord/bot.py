@@ -60,3 +60,6 @@ class Dyscord(Bot):
         await super().on_message(message)  # Run local commands
         for ph in self.server_phandlers.values():
             await ph.process_msg(message)
+
+    async def on_command_error(self, *args, **kwargs):  # Prevent reporting of missing commands (could be in plugin)
+        pass
