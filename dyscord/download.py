@@ -8,6 +8,8 @@ import os
 
 from typing import List
 
+from dyscord_plugin.plugin import DyscordPlugin
+
 from .error import PluginNotFound, PluginExists, PluginMalformedError
 
 from .plugin_bin import PLUGIN_DIR
@@ -18,6 +20,8 @@ BASE_PACKAGE = "dyscord"
 
 PLUGIN_DB = {"plugin": {"download_link": "https://github.com/dyscord/example-plugin/archive/master.tar.gz"}}  # TODO: PLACEHOLDER
 PLUGIN_INFO_FILE = "dyscord-plugin.json"
+
+PLUGIN_CLASS_NAME = "Plugin"
 
 
 def collect_plugin_info(name):
@@ -42,7 +46,12 @@ class PluginManager:
 
     def import_plugin(self, name):
         plug = importlib.import_module(".{}.{}".format(PLUGIN_PACKAGE_NAME, name), BASE_PACKAGE)
-        Plugin = plug.Plugin
+        Plugin = getattr(plug, PLUGIN_CLASS_NAME)
+        try:
+            if not issubclass(Plugin, DyscordPlugin):
+                raise AttributeError
+        except AttributeError:
+            raise PluginMalformedError("Does not subclass DyscordPlugin.")
         self.loaded[name] = Plugin
         return Plugin
 

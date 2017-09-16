@@ -1,0 +1,1 @@
+git+git://github.com/dyscord/dyscord-plugin@v0.1
