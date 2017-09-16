@@ -16,3 +16,9 @@ class PluginExists(PluginError):
 class PluginMalformedError(PluginError):
     """ Throw if downloaded plugin is malformed """
     pass
+
+
+# Plugin Implementation
+class PluginAlreadyImported(ValueError):
+    """ Throw if a plugin has already been downloaded """
+    pass
