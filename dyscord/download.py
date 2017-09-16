@@ -18,7 +18,11 @@ print("Loading plugins from: ", PLUGIN_DIR)
 
 BASE_PACKAGE = "dyscord"
 
-PLUGIN_DB = {"plugin": {"download_link": "https://github.com/dyscord/example-plugin/archive/master.tar.gz"}}  # TODO: PLACEHOLDER
+# TODO: PLACEHOLDER
+PLUGIN_DB = {
+    "test-plugin": {"download_link": "https://github.com/dyscord/dyscord-test-plugin/archive/master.tar.gz"}
+}
+
 PLUGIN_INFO_FILE = "dyscord-plugin.json"
 
 PLUGIN_CLASS_NAME = "Plugin"
