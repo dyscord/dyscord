@@ -18,19 +18,44 @@ print("Loading plugins from: ", PLUGIN_DIR)
 
 BASE_PACKAGE = "dyscord"
 
-# TODO: PLACEHOLDER
-PLUGIN_DB = {
-    "test-plugin": {"download_link": "https://github.com/dyscord/dyscord-test-plugin/archive/master.tar.gz"}
-}
+DYPI_URL = "https://github.com/dyscord/pi/archive/master.tar.gz"
+DYPI_FOLDER = "pi-master/dypi"
+DYPI_ENTRY_EXT = ".json"
 
 PLUGIN_INFO_FILE = "dyscord-plugin.json"
 
 PLUGIN_CLASS_NAME = "Plugin"
 
 
+def collect_plugin_list():
+    with tempfile.TemporaryDirectory() as td:
+        download_file = os.path.join(td, "dypi.tar.gz")
+        request.urlretrieve(DYPI_URL, download_file)
+
+        # Open downloaded tarfile:
+        plugin_tarfile = tarfile.open(download_file, mode='r:gz')
+
+        # Extract:
+        extract_dir = os.path.join(td, "extract")  # Set extraction location
+        plugin_tarfile.extractall(path=extract_dir)  # EXTRACT!!!
+
+        dypi_dir = os.path.join(extract_dir, DYPI_FOLDER)
+        pkgs = {}
+
+        for p in os.listdir(dypi_dir):
+            with open(os.path.join(dypi_dir, p), mode='r') as f:
+                p_info = json.load(f)
+
+            pkgs[p[:-len(DYPI_ENTRY_EXT)]] = {"download_link": p_info["download_link"]}
+
+    return pkgs
+
+
+PLUGIN_DB = collect_plugin_list()
+
+
 def collect_plugin_info(name):
     try:
-        # TODO: Replace with actual package system.
         return PLUGIN_DB[name]
     except KeyError:
         raise PluginNotFound
