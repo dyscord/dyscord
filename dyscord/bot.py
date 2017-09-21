@@ -1,3 +1,5 @@
+from redis import StrictRedis
+
 import discord
 from discord.ext.commands import Bot, command, Command
 from .plugin import ServerPluginHandler
@@ -18,7 +20,8 @@ class Dyscord(Bot):
         super().__init__(COMMAND_PREFIX)
 
         self.server_phandlers: Dict[discord.Guild, ServerPluginHandler] = {}
-        self.pm = PluginManager()
+        self.pm = PluginManager(self)
+        self.redis = StrictRedis(charset="utf-8", decode_responses=True)
 
         # Add all commands in class:
         for m in dir(self):
@@ -34,12 +37,12 @@ class Dyscord(Bot):
         if _guild in self.server_phandlers:  # If the guild handler has been created
             ph = self.server_phandlers[_guild]
         else:  # Guild is new
-            ph = ServerPluginHandler(_guild.id)  # Create plugin handler
+            ph = ServerPluginHandler(_guild.id, self.redis)  # Create plugin handler
             self.server_phandlers[_guild] = ph
 
         try:
             try:
-                ph.add_plugin(plugin_name, self.pm.get_plugin(plugin_name)(self))
+                ph.add_plugin(plugin_name, self.pm.get_plugin(plugin_name))
             except PluginAlreadyImported:
                 await _channel.send("Already implemented plugin: {}".format(plugin_name))
             else:
