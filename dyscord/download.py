@@ -81,8 +81,7 @@ class PluginManager:
         except KeyError:
             raise PluginNotFound
 
-    @classmethod
-    def download_plugin(cls, name):
+    def download_plugin(self, name):
         # Create temporary directory for the setup of the plugin:
         td = tempfile.TemporaryDirectory()
         try:
@@ -90,7 +89,7 @@ class PluginManager:
             plugin_tar_loc = os.path.join(temp_dir, "plugin.tar.gz")  # Set download location
 
             # Request plugin info:
-            plugin_info = cls.get_plugin_info(name)
+            plugin_info = self.get_plugin_info(name)
 
             # Download plugin to temporary location:
             request.urlretrieve(plugin_info["download_link"], plugin_tar_loc)
