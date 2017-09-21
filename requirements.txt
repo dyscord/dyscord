@@ -1,2 +1,2 @@
 git+git://github.com/Rapptz/discord.py.git@rewrite
-git+git://github.com/dyscord/dyscord-plugin@v0.1
+git+git://github.com/dyscord/dyscord-plugin@v0.2
