@@ -39,7 +39,7 @@ class Dyscord(Bot):
 
         try:
             try:
-                ph.add_plugin(plugin_name, self.pm.get_plugin(plugin_name)(self))
+                ph.add_plugin(plugin_name, self.pm.get_plugin(plugin_name))
             except PluginAlreadyImported:
                 await _channel.send("Already implemented plugin: {}".format(plugin_name))
             else:
