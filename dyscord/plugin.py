@@ -5,6 +5,8 @@ from typing import Dict
 from .error import PluginAlreadyImported
 from .redis import RedisStorageManager
 
+PLUGIN_CFG_FMT = "plugins.{}.plugin_cfgs.{}"
+
 
 class ServerPluginHandler:
     def __init__(self, guild_id, redis):
@@ -22,4 +24,4 @@ class ServerPluginHandler:
             return
 
         for name, p in self.plugins.items():
-            await p.process_msg(msg, RedisStorageManager(self.redis, "{}.{}".format(self.guild_id, name)))
+            await p.process_msg(msg, RedisStorageManager(self.redis, PLUGIN_CFG_FMT.format(self.guild_id, name)))
