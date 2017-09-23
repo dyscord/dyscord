@@ -13,6 +13,7 @@ from typing import Dict
 # Redis:
 REDIS_HOST_KEY = "DYSCORD_REDIS_HOST"
 REDIS_PORT_KEY = "DYSCORD_REDIS_PORT"
+REDIS_PASS_KEY = "DYSCORD_REDIS_PASS"
 
 # Bot version
 VERSION = 'v0.1'
@@ -31,7 +32,12 @@ def _get_redis_info():  # Get redis host info from environment vars, else use de
     except KeyError:
         redis_port = 6379
 
-    return {'host': redis_host, 'port': redis_port}
+    try:  # Attempt to get redis password from environ, but default to None
+        redis_pass = os.environ[REDIS_PASS_KEY]
+    except KeyError:
+        redis_pass = None
+
+    return {'host': redis_host, 'port': redis_port, 'password': redis_pass}
 
 
 class Dyscord(Bot):
