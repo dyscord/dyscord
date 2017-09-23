@@ -68,8 +68,12 @@ class PluginManager:
         return [x.name for x in pkgutil.iter_modules([PLUGIN_DIR])]
 
     def import_plugin(self, name):
-        plug = importlib.import_module(".{}.{}".format(PLUGIN_PACKAGE_NAME, name), BASE_PACKAGE)
-        plugin = getattr(plug, PLUGIN_CLASS_NAME)(self.bot)
+        try:
+            plug = importlib.import_module(".{}.{}".format(PLUGIN_PACKAGE_NAME, name), BASE_PACKAGE)
+            plugin = getattr(plug, PLUGIN_CLASS_NAME)(self.bot)
+        except:
+            raise PluginMalformedError
+
         try:
             if not isinstance(plugin, DyscordPlugin):
                 raise AttributeError
