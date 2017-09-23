@@ -10,10 +10,28 @@ import os
 
 from typing import Dict
 
+# Redis:
+REDIS_HOST_KEY = "DYSCORD_REDIS_HOST"
+REDIS_PORT_KEY = "DYSCORD_REDIS_PORT"
+
 # Bot version
 VERSION = 'v0.1'
 
 COMMAND_PREFIX = "d/"
+
+
+def _get_redis_info():  # Get redis host info from environment vars, else use defaults
+    try:  # Attempt to get redis host from environ, but default to 'localost'
+        redis_host = os.environ[REDIS_HOST_KEY]
+    except KeyError:
+        redis_host = 'localhost'
+
+    try:  # Attempt to get redis port from environ, but default to 6379
+        redis_port = os.environ[REDIS_PORT_KEY]
+    except KeyError:
+        redis_port = 6379
+
+    return {'host': redis_host, 'port': redis_port}
 
 
 class Dyscord(Bot):
@@ -22,7 +40,9 @@ class Dyscord(Bot):
 
         self.server_phandlers: Dict[discord.Guild, ServerPluginHandler] = {}
         self.pm = PluginManager(self)
-        self.redis = StrictRedis(charset="utf-8", decode_responses=True)
+
+        # Create StrictRedis object:
+        self.redis = StrictRedis(**_get_redis_info(), charset="utf-8", decode_responses=True)
 
         # Add all commands in class:
         for m in dir(self):
