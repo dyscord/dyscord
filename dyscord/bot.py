@@ -1,8 +1,9 @@
 from redis import StrictRedis
+import parse
 
 import discord
 from discord.ext.commands import Bot, command, Command
-from .plugin import ServerPluginHandler
+from .plugin import ServerPluginHandler, PLUGIN_LIST_FMT
 from .download import PluginManager
 from .error import PluginError, PluginAlreadyImported
 import os
@@ -29,16 +30,26 @@ class Dyscord(Bot):
             if isinstance(attr, Command):
                 self.add_command(attr)
 
+        # Load plugin handlers for existing guilds:
+        search = PLUGIN_LIST_FMT.format("*", "*")
+        for gname in self.redis.scan_iter(search):  # Search redis for plugin lists
+            guild_id = int(parse.parse(PLUGIN_LIST_FMT, gname)[0])  # Extract guild id
+            self._get_plugin_handler(guild_id)  # Create all plugin handlers of existing guilds
+
+    def _get_plugin_handler(self, guild_id):
+        if guild_id in self.server_phandlers:  # If the guild handler has been created
+            ph = self.server_phandlers[guild_id]  # Get from list
+        else:  # Guild is new
+            ph = ServerPluginHandler(guild_id, self.redis, self.pm)  # Create plugin handler
+            self.server_phandlers[guild_id] = ph  # Add handler to list
+        return ph
+
     @command(pass_context=True)
     async def plugin_install(self, ctx, plugin_name: str):
         _guild = ctx.guild
         _channel = ctx.channel
 
-        if _guild in self.server_phandlers:  # If the guild handler has been created
-            ph = self.server_phandlers[_guild]
-        else:  # Guild is new
-            ph = ServerPluginHandler(_guild.id, self.redis, self.pm)  # Create plugin handler
-            self.server_phandlers[_guild] = ph
+        ph = self._get_plugin_handler(_guild.id)  # Get plugin handler from guild id
 
         try:
             try:
