@@ -8,6 +8,8 @@ import os
 
 from typing import List
 
+from discord.ext.commands import Bot
+
 from dyscord_plugin.plugin import DyscordPlugin
 
 from .error import PluginNotFound, PluginExists, PluginMalformedError
@@ -56,7 +58,8 @@ def module_search(p: str) -> List[pkgutil.ModuleInfo]:
 
 
 class PluginManager:
-    def __init__(self):
+    def __init__(self, bot: Bot):
+        self.bot = bot
         self.loaded = {}
         self.plugin_list = collect_plugin_list()
 
@@ -66,14 +69,14 @@ class PluginManager:
 
     def import_plugin(self, name):
         plug = importlib.import_module(".{}.{}".format(PLUGIN_PACKAGE_NAME, name), BASE_PACKAGE)
-        Plugin = getattr(plug, PLUGIN_CLASS_NAME)
+        plugin = getattr(plug, PLUGIN_CLASS_NAME)(self.bot)
         try:
-            if not issubclass(Plugin, DyscordPlugin):
+            if not isinstance(plugin, DyscordPlugin):
                 raise AttributeError
         except AttributeError:
             raise PluginMalformedError("Does not subclass DyscordPlugin.")
-        self.loaded[name] = Plugin
-        return Plugin
+        self.loaded[name] = plugin
+        return plugin
 
     def get_plugin_info(self, name):
         try:
