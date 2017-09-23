@@ -28,7 +28,7 @@ def _get_redis_info():  # Get redis host info from environment vars, else use de
         redis_host = 'localhost'
 
     try:  # Attempt to get redis port from environ, but default to 6379
-        redis_port = os.environ[REDIS_PORT_KEY]
+        redis_port = int(os.environ[REDIS_PORT_KEY])
     except KeyError:
         redis_port = 6379
 
