@@ -19,6 +19,7 @@ class ServerPluginHandler:
         self.pm = pm
 
     def add_plugin(self, name):
+        self.pm.get_plugin(name)  # Load plugin or throw if it doesn't exist
         if name in self.plugin_list:
             raise PluginAlreadyImported
         self.plugin_list[name] = True  # Add key
