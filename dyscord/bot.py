@@ -21,23 +21,17 @@ VERSION = 'v0.1'
 COMMAND_PREFIX = "d/"
 
 
+def _get_environ_default(key, default):
+    try:  # Attempt to get environ at `key`, but default to `default`
+        return os.environ[key]
+    except KeyError:
+        return default
+
+
 def _get_redis_info():  # Get redis host info from environment vars, else use defaults
-    try:  # Attempt to get redis host from environ, but default to 'localost'
-        redis_host = os.environ[REDIS_HOST_KEY]
-    except KeyError:
-        redis_host = 'localhost'
-
-    try:  # Attempt to get redis port from environ, but default to 6379
-        redis_port = int(os.environ[REDIS_PORT_KEY])
-    except KeyError:
-        redis_port = 6379
-
-    try:  # Attempt to get redis password from environ, but default to None
-        redis_pass = os.environ[REDIS_PASS_KEY]
-    except KeyError:
-        redis_pass = None
-
-    return {'host': redis_host, 'port': redis_port, 'password': redis_pass}
+    return {'host': _get_environ_default(REDIS_HOST_KEY, 'localhost'),  # Get redis host - default: 'localhost'
+            'port': int(_get_environ_default(REDIS_PORT_KEY, 6379)),  # Get redis port - default: 6379
+            'password': _get_environ_default(REDIS_PASS_KEY, None)}  # Get redis password - default: None
 
 
 class Dyscord(Bot):
