@@ -74,11 +74,9 @@ class PluginManager:
         except:
             raise PluginMalformedError
 
-        try:
-            if not isinstance(plugin, DyscordPlugin):
-                raise AttributeError
-        except AttributeError:
-            raise PluginMalformedError("Does not subclass DyscordPlugin.")
+        if not isinstance(plugin, DyscordPlugin):
+            raise AttributeError
+
         self.loaded[name] = plugin
         return plugin
 
