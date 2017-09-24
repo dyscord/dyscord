@@ -57,6 +57,22 @@ def module_search(p: str) -> List[pkgutil.ModuleInfo]:
     return list(pkgutil.iter_modules([p]))
 
 
+def delete_plugins(*names):
+    for n in names:
+        if n == '__init__.py':  # Prevent deletion of __init__.py file
+            continue
+
+        del_path = os.path.join(PLUGIN_DIR, n)
+        if os.path.isdir(del_path):  # Is directory
+            shutil.rmtree(del_path)
+        else:  # Is a file
+            os.remove(del_path)
+
+
+def delete_all_plugins():
+    delete_plugins(*os.listdir(PLUGIN_DIR))
+
+
 class PluginManager:
     def __init__(self, bot: Bot):
         self.bot = bot
