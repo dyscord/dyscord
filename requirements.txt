@@ -1,4 +1,4 @@
 git+git://github.com/Rapptz/discord.py.git@rewrite
-git+git://github.com/dyscord/dyscord-plugin@v0.2
+git+git://github.com/dyscord/dyscord-plugin@v0.2.1
 redis
 parse
