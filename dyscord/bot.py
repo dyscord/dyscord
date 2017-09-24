@@ -1,8 +1,10 @@
 from redis import StrictRedis
 import parse
+import traceback
+import sys
 
 import discord
-from discord.ext.commands import Bot, command, Command
+from discord.ext.commands import Bot, command, Command, errors
 from .plugin import ServerPluginHandler, PLUGIN_LIST_FMT
 from .download import PluginManager
 from .error import PluginError, PluginAlreadyImported
@@ -95,5 +97,8 @@ class Dyscord(Bot):
         for ph in self.server_phandlers.values():
             await ph.process_msg(message)
 
-    async def on_command_error(self, *args, **kwargs):  # Prevent reporting of missing commands (could be in plugin)
-        pass
+    async def on_command_error(self, context, exception):  # Prevent reporting of missing commands (could be in plugin)
+        if isinstance(exception, errors.CommandNotFound):
+            return
+        print('Ignoring exception in command {}:'.format(context.command), file=sys.stderr)
+        traceback.print_exception(type(exception), exception, exception.__traceback__, file=sys.stderr)
